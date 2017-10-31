@@ -1,0 +1,23 @@
+security:
+   encoders:
+        AppBundle\Entity\MaAccount:
+          algorithm:        sha512
+
+
+   role_hierarchy:
+
+
+   providers:
+        administrators:
+            entity: { class: AppBundle\Entity\MaAccount, property: accountName }
+
+
+
+   firewalls:
+
+        dev:
+           pattern:  ^/(_(profiler|wdt)|css|images|js)/
+           security: false
+        
+        
+        
