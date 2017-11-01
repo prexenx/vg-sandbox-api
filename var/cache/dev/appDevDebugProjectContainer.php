@@ -31,6 +31,7 @@ class appDevDebugProjectContainer extends Container
         $this->normalizedIds = array(
             'appbundle\\controller\\accountcontroller' => 'AppBundle\\Controller\\AccountController',
             'appbundle\\controller\\agentcontroller' => 'AppBundle\\Controller\\AgentController',
+            'appbundle\\controller\\cdrcontroller' => 'AppBundle\\Controller\\CdrController',
             'appbundle\\controller\\defaultcontroller' => 'AppBundle\\Controller\\DefaultController',
         );
         $this->methodMap = array(
@@ -38,6 +39,7 @@ class appDevDebugProjectContainer extends Container
             '2_5bae05b74f00b6b86e89a996c9cbec08ea7a2de5130761f27996eabc83d0f33b' => 'get25bae05b74f00b6b86e89a996c9cbec08ea7a2de5130761f27996eabc83d0f33bService',
             'AppBundle\\Controller\\AccountController' => 'getAppBundle_Controller_AccountControllerService',
             'AppBundle\\Controller\\AgentController' => 'getAppBundle_Controller_AgentControllerService',
+            'AppBundle\\Controller\\CdrController' => 'getAppBundle_Controller_CdrControllerService',
             'AppBundle\\Controller\\DefaultController' => 'getAppBundle_Controller_DefaultControllerService',
             'annotation_reader' => 'getAnnotationReaderService',
             'annotations.reader' => 'getAnnotations_ReaderService',
@@ -425,6 +427,16 @@ class appDevDebugProjectContainer extends Container
     protected function getAppBundle_Controller_AgentControllerService()
     {
         return $this->services['AppBundle\Controller\AgentController'] = new \AppBundle\Controller\AgentController();
+    }
+
+    /**
+     * Gets the public 'AppBundle\Controller\CdrController' shared autowired service.
+     *
+     * @return \AppBundle\Controller\CdrController
+     */
+    protected function getAppBundle_Controller_CdrControllerService()
+    {
+        return $this->services['AppBundle\Controller\CdrController'] = new \AppBundle\Controller\CdrController();
     }
 
     /**
@@ -3337,9 +3349,13 @@ class appDevDebugProjectContainer extends Container
             return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
         }, 'AppBundle\\Controller\\AgentController:setViewHandler' => function () {
             return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
+        }, 'AppBundle\\Controller\\CdrController:setViewHandler' => function () {
+            return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
         }, 'AppBundle\\Controller\\AccountController::setViewHandler' => function () {
             return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
         }, 'AppBundle\\Controller\\AgentController::setViewHandler' => function () {
+            return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
+        }, 'AppBundle\\Controller\\CdrController::setViewHandler' => function () {
             return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
         })));
     }
@@ -3381,7 +3397,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getCache_Annotations_RecorderInnerService($lazyLoad = true)
     {
-        return $this->services['cache.annotations.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('lUA9Bsd5rY', 0, 'h1Aq3TfuPkWDffnpDQ2MEj', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.annotations.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('lUA9Bsd5rY', 0, 'qEah-REkAkhuO9xNtQYsB9', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /**
@@ -3407,7 +3423,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getCache_Serializer_RecorderInnerService($lazyLoad = true)
     {
-        return $this->services['cache.serializer.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('+GROHKeALZ', 0, 'h1Aq3TfuPkWDffnpDQ2MEj', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.serializer.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('+GROHKeALZ', 0, 'qEah-REkAkhuO9xNtQYsB9', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /**
@@ -3417,7 +3433,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getCache_System_RecorderInnerService($lazyLoad = true)
     {
-        return $this->services['cache.system.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('ngLQKaOLsw', 0, 'h1Aq3TfuPkWDffnpDQ2MEj', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.system.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('ngLQKaOLsw', 0, 'qEah-REkAkhuO9xNtQYsB9', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /**
@@ -3437,7 +3453,7 @@ class appDevDebugProjectContainer extends Container
      */
     protected function getCache_Validator_RecorderInnerService($lazyLoad = true)
     {
-        return $this->services['cache.validator.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('UFFsSHgHP+', 0, 'h1Aq3TfuPkWDffnpDQ2MEj', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.validator.recorder_inner'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('UFFsSHgHP+', 0, 'qEah-REkAkhuO9xNtQYsB9', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /**

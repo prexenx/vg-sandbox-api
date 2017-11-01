@@ -105,7 +105,7 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
         elseif (0 === strpos($pathinfo, '/account')) {
             // app_account_get
-            if (preg_match('#^/account/(?P<key>[^/]++)$#s', $pathinfo, $matches)) {
+            if (preg_match('#^/account/(?P<accountName>[^/]++)$#s', $pathinfo, $matches)) {
                 if ('GET' !== $canonicalMethod) {
                     $allow[] = 'GET';
                     goto not_app_account_get;
@@ -148,8 +148,26 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             }
             not_app_account_delete:
 
+        }
+
+        elseif (0 === strpos($pathinfo, '/agent')) {
+            // app_agent_get
+            if ('/agent' === $trimmedPathinfo) {
+                if ('GET' !== $canonicalMethod) {
+                    $allow[] = 'GET';
+                    goto not_app_agent_get;
+                }
+
+                if (substr($pathinfo, -1) !== '/') {
+                    return $this->redirect($pathinfo.'/', 'app_agent_get');
+                }
+
+                return array (  '_controller' => 'AppBundle\\Controller\\AgentController::getAction',  '_route' => 'app_agent_get',);
+            }
+            not_app_agent_get:
+
             // app_agent_post
-            if ('/account/' === $pathinfo) {
+            if ('/agent/' === $pathinfo) {
                 if ('POST' !== $canonicalMethod) {
                     $allow[] = 'POST';
                     goto not_app_agent_post;
@@ -160,7 +178,7 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             not_app_agent_post:
 
             // app_agent_put
-            if ('/account/' === $pathinfo) {
+            if ('/agent/' === $pathinfo) {
                 if ('PUT' !== $canonicalMethod) {
                     $allow[] = 'PUT';
                     goto not_app_agent_put;
@@ -171,7 +189,7 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
             not_app_agent_put:
 
             // app_agent_delete
-            if ('/account/' === $pathinfo) {
+            if ('/agent/' === $pathinfo) {
                 if ('DELETE' !== $canonicalMethod) {
                     $allow[] = 'DELETE';
                     goto not_app_agent_delete;
@@ -183,16 +201,52 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
         }
 
-        // app_agent_get
-        if (0 === strpos($pathinfo, '/agent') && preg_match('#^/agent/(?P<key>[^/]++)$#s', $pathinfo, $matches)) {
-            if ('GET' !== $canonicalMethod) {
-                $allow[] = 'GET';
-                goto not_app_agent_get;
-            }
+        elseif (0 === strpos($pathinfo, '/cdr')) {
+            // app_cdr_get
+            if (preg_match('#^/cdr/(?P<user>[^/]++)$#s', $pathinfo, $matches)) {
+                if ('GET' !== $canonicalMethod) {
+                    $allow[] = 'GET';
+                    goto not_app_cdr_get;
+                }
 
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'app_agent_get')), array (  '_controller' => 'AppBundle\\Controller\\AgentController::getAction',));
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'app_cdr_get')), array (  '_controller' => 'AppBundle\\Controller\\CdrController::getAction',));
+            }
+            not_app_cdr_get:
+
+            // app_cdr_post
+            if (preg_match('#^/cdr/(?P<user>[^/]++)$#s', $pathinfo, $matches)) {
+                if ('POST' !== $canonicalMethod) {
+                    $allow[] = 'POST';
+                    goto not_app_cdr_post;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'app_cdr_post')), array (  '_controller' => 'AppBundle\\Controller\\CdrController::postAction',));
+            }
+            not_app_cdr_post:
+
+            // app_cdr_put
+            if (preg_match('#^/cdr/(?P<user>[^/]++)$#s', $pathinfo, $matches)) {
+                if ('PUT' !== $canonicalMethod) {
+                    $allow[] = 'PUT';
+                    goto not_app_cdr_put;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'app_cdr_put')), array (  '_controller' => 'AppBundle\\Controller\\CdrController::putAction',));
+            }
+            not_app_cdr_put:
+
+            // app_cdr_delete
+            if (preg_match('#^/cdr/(?P<user>[^/]++)$#s', $pathinfo, $matches)) {
+                if ('DELETE' !== $canonicalMethod) {
+                    $allow[] = 'DELETE';
+                    goto not_app_cdr_delete;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'app_cdr_delete')), array (  '_controller' => 'AppBundle\\Controller\\CdrController::deleteAction',));
+            }
+            not_app_cdr_delete:
+
         }
-        not_app_agent_get:
 
         // homepage
         if ('' === $trimmedPathinfo) {

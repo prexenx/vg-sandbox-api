@@ -31,11 +31,13 @@ class appProdProjectContainer extends Container
         $this->normalizedIds = array(
             'appbundle\\controller\\accountcontroller' => 'AppBundle\\Controller\\AccountController',
             'appbundle\\controller\\agentcontroller' => 'AppBundle\\Controller\\AgentController',
+            'appbundle\\controller\\cdrcontroller' => 'AppBundle\\Controller\\CdrController',
             'appbundle\\controller\\defaultcontroller' => 'AppBundle\\Controller\\DefaultController',
         );
         $this->methodMap = array(
             'AppBundle\\Controller\\AccountController' => 'getAppBundle_Controller_AccountControllerService',
             'AppBundle\\Controller\\AgentController' => 'getAppBundle_Controller_AgentControllerService',
+            'AppBundle\\Controller\\CdrController' => 'getAppBundle_Controller_CdrControllerService',
             'AppBundle\\Controller\\DefaultController' => 'getAppBundle_Controller_DefaultControllerService',
             'annotation_reader' => 'getAnnotationReaderService',
             'annotations.reader' => 'getAnnotations_ReaderService',
@@ -377,6 +379,16 @@ class appProdProjectContainer extends Container
     }
 
     /*
+     * Gets the public 'AppBundle\Controller\CdrController' shared autowired service.
+     *
+     * @return \AppBundle\Controller\CdrController
+     */
+    protected function getAppBundle_Controller_CdrControllerService()
+    {
+        return $this->services['AppBundle\Controller\CdrController'] = new \AppBundle\Controller\CdrController();
+    }
+
+    /*
      * Gets the public 'AppBundle\Controller\DefaultController' shared autowired service.
      *
      * @return \AppBundle\Controller\DefaultController
@@ -459,7 +471,7 @@ class appProdProjectContainer extends Container
      */
     protected function getCache_SystemService()
     {
-        return $this->services['cache.system'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('3mBZ9BZd+o', 0, '9EUUE7uIOmlbxDfsG0wMzC', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.system'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('3mBZ9BZd+o', 0, 'yxmPH6gRKQ9TwGprZpH84f', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /*
@@ -2886,9 +2898,13 @@ class appProdProjectContainer extends Container
             return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
         }, 'AppBundle\\Controller\\AgentController:setViewHandler' => function () {
             return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
+        }, 'AppBundle\\Controller\\CdrController:setViewHandler' => function () {
+            return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
         }, 'AppBundle\\Controller\\AccountController::setViewHandler' => function () {
             return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
         }, 'AppBundle\\Controller\\AgentController::setViewHandler' => function () {
+            return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
+        }, 'AppBundle\\Controller\\CdrController::setViewHandler' => function () {
             return ${($_ = isset($this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8']) ? $this->services['service_locator.182f5c5b079727c046caf1a16a7b23a8'] : $this->getServiceLocator_182f5c5b079727c046caf1a16a7b23a8Service()) && false ?: '_'};
         })));
     }
@@ -2920,7 +2936,7 @@ class appProdProjectContainer extends Container
      */
     protected function getCache_AnnotationsService($lazyLoad = true)
     {
-        return $this->services['cache.annotations'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('b14Ei-sFj7', 0, '9EUUE7uIOmlbxDfsG0wMzC', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.annotations'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('b14Ei-sFj7', 0, 'yxmPH6gRKQ9TwGprZpH84f', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /*
@@ -2930,7 +2946,7 @@ class appProdProjectContainer extends Container
      */
     protected function getCache_PropertyAccessService()
     {
-        return $this->services['cache.property_access'] = \Symfony\Component\PropertyAccess\PropertyAccessor::createCache('8YDF4wlYzV', NULL, '9EUUE7uIOmlbxDfsG0wMzC', ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.property_access'] = \Symfony\Component\PropertyAccess\PropertyAccessor::createCache('8YDF4wlYzV', NULL, 'yxmPH6gRKQ9TwGprZpH84f', ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /*
@@ -2940,7 +2956,7 @@ class appProdProjectContainer extends Container
      */
     protected function getCache_ValidatorService($lazyLoad = true)
     {
-        return $this->services['cache.validator'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('vRpb6pzmg1', 0, '9EUUE7uIOmlbxDfsG0wMzC', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
+        return $this->services['cache.validator'] = \Symfony\Component\Cache\Adapter\AbstractAdapter::createSystemCache('vRpb6pzmg1', 0, 'yxmPH6gRKQ9TwGprZpH84f', (__DIR__.'/pools'), ${($_ = isset($this->services['monolog.logger.cache']) ? $this->services['monolog.logger.cache'] : $this->get('monolog.logger.cache', ContainerInterface::NULL_ON_INVALID_REFERENCE)) && false ?: '_'});
     }
 
     /*

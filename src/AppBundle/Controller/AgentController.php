@@ -10,206 +10,236 @@ use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\View\View;
 use AppBundle\Entity\MaAccount;
 use AppBundle\Entity\MaAgent;
+use AppBundle\Utils\Auth;
 
 class AgentController extends FOSRestController
 {
 	/**
-	 * @Rest\Get("/agent/{key}")
+	 * @Rest\Get("/agent/")
 	 */
-	public function getAction($key)
+	public function getAction(Request $request)
 	{
-		$userPass=base64_decode($key);
-		$tmp=explode(":", $userPass);
-		$user=$tmp[0];
-		if(count($tmp)>1)
+		$key=$request->headers->get('auth');
+		$auth = new Auth();
+		if($auth->isAuth($key))
 		{
-			$pass=$tmp[1];
-		}
-		$userObj = $this->getDoctrine()
-		->getRepository('AppBundle:MaAccount')
-		->findOneBy(array("accountName" => $user));
-		if ($userObj === null) {
-			return new View("there are no users exist", Response::HTTP_NOT_FOUND);
-		}
-		$factory = $this->get('security.encoder_factory');
-		$encoder = $factory->getEncoder($userObj);
-		$password = $encoder->encodePassword($pass, $userObj->getSalt());
-		if($userObj->getPassword() == $password)
-		{
-			$agents = $this->getDoctrine()
-			->getRepository('AppBundle:MaAgent')
-			->findBy(array("account" => $userObj->getId()));
-			return $agents;
+			$authUser = $this->getDoctrine()
+			->getRepository('AppBundle:MaAccount')
+			->findOneBy(array("accountName" => $auth->getUser($key)));
+			if(!$authUser)
+			{
+				return new View("Auth fail", Response::HTTP_FORBIDDEN);
+			}
+			$factory = $this->get('security.encoder_factory');
+			$encoder = $factory->getEncoder($authUser);
+			$password = $encoder->encodePassword($auth->getPassword($key), $authUser->getSalt());
+				
+			if($password == $authUser->getPassword())
+			{
+				//IF AUTH SUCCESS MAKE YOUR STUFF
+				if($request->get('user') == null)
+				{
+					$agents = $this->getDoctrine()
+					->getRepository('AppBundle:MaAgent')
+					->findBy(array("account" => $authUser->getId()));
+					return $agents;
+				}
+				else 
+				{
+					$agents = $this->getDoctrine()
+					->getRepository('AppBundle:MaAgent')
+					->findOneBy(array("account" => $authUser->getId(), "user" => $request->get('user')));
+					return $agents;
+				}
+			}
+			else
+			{
+				return new View("Auth fail", Response::HTTP_FORBIDDEN);
+			}
 		}
 		else
 		{
 			return new View("Auth fail", Response::HTTP_FORBIDDEN);
 		}
-
 	}
+
 	/**
-	 * @Rest\Post("/account/")
+	 * @Rest\Post("/agent/")
 	 */
 	public function postAction(Request $request)
 	{
-		$newAccount = new MaAccount();
-		$key = $request->get('key');
-		$userPass=base64_decode($key);
-		$tmp=explode(":", $userPass);
-		$user=$tmp[0];
-		if(count($tmp)>1)
+		$key=$request->headers->get('auth');
+		$auth = new Auth();
+		if($auth->isAuth($key))
 		{
-			$pass=$tmp[1];
-		}
-		$userObj = $this->getDoctrine()
-		->getRepository('AppBundle:MaAccount')
-		->findOneBy(array("accountName" => $user));
-		if ($userObj === null) {
-			return new View("there are no users exist", Response::HTTP_NOT_FOUND);
-		}
-		$factory = $this->get('security.encoder_factory');
-		$encoder = $factory->getEncoder($userObj);
-		$password = $encoder->encodePassword($pass, $userObj->getSalt());
-		if($userObj->getPassword() == $password)
-		{
-			$accountName = $request->get('accountName');
-			$newPassword =  $request->get('password');
-			$passToken = $request->get('token');
-			$email = $request->get('email');
-			if(empty($accountName) || empty($newPassword) || empty($passToken) || empty($email))
+			$authUser = $this->getDoctrine()
+			->getRepository('AppBundle:MaAccount')
+			->findOneBy(array("accountName" => $auth->getUser($key)));
+			if(!$authUser)
 			{
+				return new View("Auth fail", Response::HTTP_FORBIDDEN);
+			}
+			$factory = $this->get('security.encoder_factory');
+			$encoder = $factory->getEncoder($authUser);
+			$password = $encoder->encodePassword($auth->getPassword($key), $authUser->getSalt());
+				
+			if($password == $authUser->getPassword())
+			{
+				//IF AUTH SUCCESS MAKE YOUR STUFF
+				$user = $request->get('user');
+				$pass = $request->get('password');
+				$server = $request->get('sipServer');
+				if(empty($user) || empty($pass) || empty($server))
+				{
 				return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE);
+				}
+				else 
+				{	
+				$agent = new MaAgent();
+				$agent->setAccount($authUser);
+				$agent->setPassword($pass);
+				$agent->setUser($user);
+				$agent->setSipServer($server);
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($agent);
+				$em->flush();
+				return $agent;
+				}
 			}
 			else
 			{
-				$newAccount->setAccountName($accountName);
-				$newAccount->setPassword($encoder->encodePassword($newPassword, $userObj->getSalt()));
-				$newAccount->setPasswordToken($passToken);
-				$newAccount->setEmail($email);
-				$em = $this->getDoctrine()->getManager();
-				$em->persist($newAccount);
-				$em->flush();
-				return $newAccount;
+				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 		}
 		else
 		{
 			return new View("Auth fail", Response::HTTP_FORBIDDEN);
 		}
-
 	}
 	/**
-	 * @Rest\Put("/account/")
+	 * @Rest\Put("/agent/")
 	 */
 	public function putAction(Request $request)
 	{
-		$key = $request->get('key');
-		$userPass=base64_decode($key);
-		$tmp=explode(":", $userPass);
-		$user=$tmp[0];
-		if(count($tmp)>1)
+		$key=$request->headers->get('auth');
+		$auth = new Auth();
+		if($auth->isAuth($key))
 		{
-			$pass=$tmp[1];
-		}
-		$userObj = $this->getDoctrine()
-		->getRepository('AppBundle:MaAccount')
-		->findOneBy(array("accountName" => $user));
-		if ($userObj === null) {
-			return new View("there are no users exist", Response::HTTP_NOT_FOUND);
-		}
-		$factory = $this->get('security.encoder_factory');
-		$encoder = $factory->getEncoder($userObj);
-		$password = $encoder->encodePassword($pass, $userObj->getSalt());
-		if($userObj->getPassword() == $password)
-		{
-			$accountName =  $request->get('accountName');
-			$newPassword =  $request->get('password');
-			$passToken = $request->get('token');
-			$email = $request->get('email');
-			if(!empty($accountName))
+			$authUser = $this->getDoctrine()
+			->getRepository('AppBundle:MaAccount')
+			->findOneBy(array("accountName" => $auth->getUser($key)));
+			if(!$authUser)
 			{
-				$userObj = $this->getDoctrine()
-				->getRepository('AppBundle:MaAccount')
-				->findOneBy(array("accountName" => $accountName));
+				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
-			if(!empty($newPassword))
+			$factory = $this->get('security.encoder_factory');
+			$encoder = $factory->getEncoder($authUser);
+			$password = $encoder->encodePassword($auth->getPassword($key), $authUser->getSalt());
+				
+			if($password == $authUser->getPassword())
 			{
-				$userObj->setPassword($encoder->encodePassword($newPassword, $userObj->getSalt()));
-			}
-			if(!empty($passToken))
-			{
-				$userObj->setPasswordToken($passToken);
-			}
-			if(!empty($passToken))
-			{
-				$userObj->setEmail($email);
-			}
-			$em = $this->getDoctrine()->getManager();
-			$em->persist($userObj);
-			$em->flush();
-			return $userObj;
-		}
-		else
-		{
-			return new View("Auth fail", Response::HTTP_FORBIDDEN);
-		}
-
-	}
-	/**
-	 * @Rest\Delete("/account/")
-	 */
-	public function deleteAction(Request $request)
-	{
-		$key = $request->get('key');
-		$userPass=base64_decode($key);
-		$tmp=explode(":", $userPass);
-		$user=$tmp[0];
-		if(count($tmp)>1)
-		{
-			$pass=$tmp[1];
-		}
-		$userObj = $this->getDoctrine()
-		->getRepository('AppBundle:MaAccount')
-		->findOneBy(array("accountName" => $user));
-		if ($userObj === null) {
-			return new View("there are no users exist", Response::HTTP_NOT_FOUND);
-		}
-		$factory = $this->get('security.encoder_factory');
-		$encoder = $factory->getEncoder($userObj);
-		$password = $encoder->encodePassword($pass, $userObj->getSalt());
-		if($userObj->getPassword() == $password)
-		{
-			$accountName =  $request->get('accountName');
-			if(!empty($accountName))
-			{
-				$userObj = $this->getDoctrine()
-				->getRepository('AppBundle:MaAccount')
-				->findOneBy(array("accountName" => $accountName));
-					
-				if($userObj)
+				//IF AUTH SUCCESS MAKE YOUR STUFF
+				$user=$request->get('user');
+				if(empty($user))
 				{
-					$em = $this->getDoctrine()->getManager();
-					$em->remove($userObj);
-					$em->flush();
-
-					return new View("deleted successfuly", Response::HTTP_OK);
+					return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE);
 				}
 				else
 				{
-					return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+					$agent = $this->getDoctrine()
+					->getRepository('AppBundle:MaAgent')
+					->findOneBy(array("account" => $authUser->getId(), "user" => $user));
+					if($agent)
+					{
+						$pass = $request->get('password');
+						$server = $request->get('sipServer');
+						if(!empty($pass))
+						{
+							$agent->setPassword($pass);
+						}
+						if(!empty($server))
+						{
+							$agent->setSipServer($server);
+						}
+						$em = $this->getDoctrine()->getManager();
+						$em->persist($agent);
+						$em->flush();
+						return $agent;
+					}
+					else
+					{
+						return new View("No user found", Response::HTTP_NOT_FOUND);
+					}
 				}
 			}
 			else
 			{
-				return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
-				
 		}
 		else
 		{
 			return new View("Auth fail", Response::HTTP_FORBIDDEN);
 		}
-
+		
+	}
+	/**
+	 * @Rest\Delete("/agent/")
+	 */
+	public function deleteAction(Request $request)
+	{
+		$key=$request->headers->get('auth');
+		$auth = new Auth();
+		if($auth->isAuth($key))
+		{
+			$authUser = $this->getDoctrine()
+			->getRepository('AppBundle:MaAccount')
+			->findOneBy(array("accountName" => $auth->getUser($key)));
+			if(!$authUser)
+			{
+				return new View("Auth fail", Response::HTTP_FORBIDDEN);
+			}
+			$factory = $this->get('security.encoder_factory');
+			$encoder = $factory->getEncoder($authUser);
+			$password = $encoder->encodePassword($auth->getPassword($key), $authUser->getSalt());
+		
+			if($password == $authUser->getPassword())
+			{
+				//IF AUTH SUCCESS MAKE YOUR STUFF
+				$user=$request->get('user');
+				if(empty($user))
+				{
+					return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE);
+				}
+				else
+				{
+					$agent = $this->getDoctrine()
+					->getRepository('AppBundle:MaAgent')
+					->findOneBy(array("account" => $authUser->getId(), "user" => $user));
+					if($agent)
+					{
+						$em = $this->getDoctrine()->getManager();
+						$em->remove($agent);
+						$em->flush();
+						return new View("deleted successfuly", Response::HTTP_OK);
+					}
+					else
+					{
+						return new View("No user found", Response::HTTP_NOT_FOUND);
+					}
+				}
+			}
+			else
+			{
+				return new View("Auth fail", Response::HTTP_FORBIDDEN);
+			}
+		}
+		else
+		{
+			return new View("Auth fail", Response::HTTP_FORBIDDEN);
+		}
+		
+	
 	}
 }
 ?>
