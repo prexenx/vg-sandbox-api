@@ -9,7 +9,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\View\View;
 use AppBundle\Entity\MaAccount;
+use AppBundle\Entity\MaInApiEvents;
 use AppBundle\Utils\Auth;
+use Symfony\Component\Validator\Constraint;
+use \DateTime;
 class AccountController extends FOSRestController
 {
 	/**
@@ -26,6 +29,16 @@ class AccountController extends FOSRestController
 			->findOneBy(array("accountName" => $auth->getUser($key)));
 			if(!$authUser)
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("GET /account/");
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 			$factory = $this->get('security.encoder_factory');
@@ -38,18 +51,48 @@ class AccountController extends FOSRestController
 				$userObj = $this->getDoctrine()
 				->getRepository('AppBundle:MaAccount')
 				->findOneBy(array("accountName" => $accountName));
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("GET /account/");
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***, accountName : ".$accountName." }");
+				$event->setResult("Success - HTTP_OK");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return $userObj;
 			}
 			else
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("GET /account/");
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}	
 		}
 		else 
 		{
+			$event = new MaInApiEvents();
+			$event->setAccount($authUser);
+			$event->setAction("GET /account/");
+			$eDate = new DateTime();
+			$event->setDate($eDate);
+			$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+			$event->setResult("Auth fail - HTTP_FORBIDDEN");
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($event);
+			$em->flush();
 			return new View("Auth fail", Response::HTTP_FORBIDDEN);
 		}
-		
+	
 	}
 	/**
 	 * @Rest\Post("/account/")
@@ -65,6 +108,16 @@ class AccountController extends FOSRestController
 			->findOneBy(array("accountName" => $auth->getUser($key)));
 			if(!$authUser)
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("POST /account/");
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 			$factory = $this->get('security.encoder_factory');
@@ -80,7 +133,17 @@ class AccountController extends FOSRestController
 				$email = $request->get('email');
 				if(empty($accountName) || empty($newPassword) || empty($passToken) || empty($email))
 				{
-				return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE);
+					$event = new MaInApiEvents();
+					$event->setAccount($authUser);
+					$event->setAction("POST /account/");
+					$eDate = new DateTime();
+					$event->setDate($eDate);
+					$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ accountName : ".$accountName.", password : ".$newPassword.", token : ".$passToken.", email :".$email."}");
+					$event->setResult("NULL VALUES ARE NOT ALLOWED - HTTP_NOT_ACCEPTABLE");
+					$em = $this->getDoctrine()->getManager();
+					$em->persist($event);
+					$em->flush();
+					return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE);
 				}
 				else 
 				{
@@ -92,16 +155,47 @@ class AccountController extends FOSRestController
 				$em = $this->getDoctrine()->getManager();
 				$em->persist($newAccount);
 				$em->flush();
+				
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("POST /account/");
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ accountName : ".$newAccount->getUsername().", password : ".$newAccount->getPassword().", token : ".$newAccount->getPasswordToken().", email :".$newAccount->getEmail()."}");
+				$event->setResult("Success - HTTP_OK");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return $newAccount;
 				}
 			}
 			else
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("POST /account/");
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 		}
 		else
 		{
+			$event = new MaInApiEvents();
+			$event->setAccount($authUser);
+			$event->setAction("POST /account/");
+			$eDate = new DateTime();
+			$event->setDate($eDate);
+			$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+			$event->setResult("Auth fail - HTTP_FORBIDDEN");
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($event);
+			$em->flush();
 			return new View("Auth fail", Response::HTTP_FORBIDDEN);
 		}
 	}
@@ -119,6 +213,16 @@ class AccountController extends FOSRestController
 			->findOneBy(array("accountName" => $auth->getUser($key)));
 			if(!$authUser)
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("PUT /account/");
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 			$factory = $this->get('security.encoder_factory');
@@ -154,25 +258,77 @@ class AccountController extends FOSRestController
 						$em = $this->getDoctrine()->getManager();
 						$em->persist($userObj);
 						$em->flush();
+						
+						$event = new MaInApiEvents();
+						$event->setAccount($authUser);
+						$event->setAction("PUT /account/");
+						$eDate = new DateTime();
+						$event->setDate($eDate);
+						$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ accountName : ".$userObj->getUsername().", password : ".$userObj->getPassword().", token : ".$userObj->getPasswordToken().", email :".$userObj->getEmail()."}");
+						$event->setResult("Success - HTTP_OK");
+						$em = $this->getDoctrine()->getManager();
+						$em->persist($event);
+						$em->flush();
+						
 						return $userObj;
 				    }
 				    else 
 				    {
+				    	$event = new MaInApiEvents();
+				    	$event->setAccount($authUser);
+				    	$event->setAction("PUT /account/");
+				    	$eDate = new DateTime();
+				    	$event->setDate($eDate);
+				    	$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ accountName : ".$accountName."}");
+				    	$event->setResult("Invalid parameters - HTTP_NOT_FOUND");
+				    	$em = $this->getDoctrine()->getManager();
+				    	$em->persist($event);
+				    	$em->flush();
 				    	return new View("Invalid parameters", Response::HTTP_NOT_FOUND);
 				    }
 				}
 				else 
 				{
+					$event = new MaInApiEvents();
+					$event->setAccount($authUser);
+					$event->setAction("PUT /account/");
+					$eDate = new DateTime();
+					$event->setDate($eDate);
+					$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ accountName : ".$accountName."}");
+					$event->setResult("Invalid parameters - HTTP_NOT_FOUND");
+					$em = $this->getDoctrine()->getManager();
+					$em->persist($event);
+					$em->flush();
 					return new View("Invalid parameters", Response::HTTP_NOT_FOUND);
 				}
 			}
 			else
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("PUT /account/");
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 		}
 		else
 		{
+			$event = new MaInApiEvents();
+			$event->setAccount($authUser);
+			$event->setAction("PUT /account/");
+			$eDate = new DateTime();
+			$event->setDate($eDate);
+			$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+			$event->setResult("Auth fail - HTTP_FORBIDDEN");
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($event);
+			$em->flush();
 			return new View("Auth fail", Response::HTTP_FORBIDDEN);
 		}	
 	}
@@ -190,6 +346,16 @@ class AccountController extends FOSRestController
 			->findOneBy(array("accountName" => $auth->getUser($key)));
 			if(!$authUser)
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("DELETE /account/");
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 			$factory = $this->get('security.encoder_factory');
@@ -212,25 +378,76 @@ class AccountController extends FOSRestController
 						$em->remove($userObj);
 						$em->flush();
 				
+						$event = new MaInApiEvents();
+						$event->setAccount($authUser);
+						$event->setAction("DELETE /account/");
+						$eDate = new DateTime();
+						$event->setDate($eDate);
+						$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ accountName : ".$accountName."}");
+						$event->setResult("Success - HTTP_OK");
+						$em = $this->getDoctrine()->getManager();
+						$em->persist($event);
+						$em->flush();
+						
 						return new View("deleted successfuly", Response::HTTP_OK);
 					}
 					else 
 					{
+						$event = new MaInApiEvents();
+						$event->setAccount($authUser);
+						$event->setAction("DELETE /account/");
+						$eDate = new DateTime();
+						$event->setDate($eDate);
+						$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ accountName : ".$accountName."}");
+						$event->setResult("Invalid parameters - HTTP_NOT_FOUND");
+						$em = $this->getDoctrine()->getManager();
+						$em->persist($event);
+						$em->flush();
 						return new View("No user found", Response::HTTP_NOT_FOUND);
 					}
 				}
 				else
 				{
+					$event = new MaInApiEvents();
+					$event->setAccount($authUser);
+					$event->setAction("DELETE /account/");
+					$eDate = new DateTime();
+					$event->setDate($eDate);
+					$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ accountName : ".$accountName."}");
+					$event->setResult("Invalid parameters - HTTP_NOT_FOUND");
+					$em = $this->getDoctrine()->getManager();
+					$em->persist($event);
+					$em->flush();
 					return new View("No user found", Response::HTTP_NOT_FOUND);
 				}
 			}
 			else
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("DELETE /account/");
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 		}
 		else
 		{
+			$event = new MaInApiEvents();
+			$event->setAccount($authUser);
+			$event->setAction("DELETE /account/");
+			$eDate = new DateTime();
+			$event->setDate($eDate);
+			$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+			$event->setResult("Auth fail - HTTP_FORBIDDEN");
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($event);
+			$em->flush();
 			return new View("Auth fail", Response::HTTP_FORBIDDEN);
 		}
 	

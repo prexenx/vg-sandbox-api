@@ -201,6 +201,57 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
         }
 
+        elseif (0 === strpos($pathinfo, '/event')) {
+            // app_apioutevents_get
+            if ('/event' === $trimmedPathinfo) {
+                if ('GET' !== $canonicalMethod) {
+                    $allow[] = 'GET';
+                    goto not_app_apioutevents_get;
+                }
+
+                if (substr($pathinfo, -1) !== '/') {
+                    return $this->redirect($pathinfo.'/', 'app_apioutevents_get');
+                }
+
+                return array (  '_controller' => 'AppBundle\\Controller\\ApiOutEventsController::getAction',  '_route' => 'app_apioutevents_get',);
+            }
+            not_app_apioutevents_get:
+
+            // app_apioutevents_post
+            if ('/event/' === $pathinfo) {
+                if ('POST' !== $canonicalMethod) {
+                    $allow[] = 'POST';
+                    goto not_app_apioutevents_post;
+                }
+
+                return array (  '_controller' => 'AppBundle\\Controller\\ApiOutEventsController::postAction',  '_route' => 'app_apioutevents_post',);
+            }
+            not_app_apioutevents_post:
+
+            // app_apioutevents_put
+            if ('/event/' === $pathinfo) {
+                if ('PUT' !== $canonicalMethod) {
+                    $allow[] = 'PUT';
+                    goto not_app_apioutevents_put;
+                }
+
+                return array (  '_controller' => 'AppBundle\\Controller\\ApiOutEventsController::putAction',  '_route' => 'app_apioutevents_put',);
+            }
+            not_app_apioutevents_put:
+
+            // app_apioutevents_delete
+            if ('/event/' === $pathinfo) {
+                if ('DELETE' !== $canonicalMethod) {
+                    $allow[] = 'DELETE';
+                    goto not_app_apioutevents_delete;
+                }
+
+                return array (  '_controller' => 'AppBundle\\Controller\\ApiOutEventsController::deleteAction',  '_route' => 'app_apioutevents_delete',);
+            }
+            not_app_apioutevents_delete:
+
+        }
+
         elseif (0 === strpos($pathinfo, '/cdr')) {
             // app_cdr_get
             if (preg_match('#^/cdr/(?P<user>[^/]++)$#s', $pathinfo, $matches)) {

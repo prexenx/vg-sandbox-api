@@ -12,6 +12,7 @@ use AppBundle\Entity\MaAccount;
 use AppBundle\Entity\MaAgent;
 use AppBundle\Entity\MaCdr;
 use AppBundle\Utils\Auth;
+use AppBundle\Entity\MaInApiEvents;
 use \DateTime;
 use Symfony\Component\Validator\Constraint;
 
@@ -31,6 +32,16 @@ class CdrController extends FOSRestController
 			->findOneBy(array("accountName" => $auth->getUser($key)));
 			if(!$authUser)
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("GET /cdr/".$user);
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 			$factory = $this->get('security.encoder_factory');
@@ -49,20 +60,62 @@ class CdrController extends FOSRestController
 					$cdr = $this->getDoctrine()
 					->getRepository('AppBundle:MaCdr')
 					->findBy(array("agent" => $agent->getId()));
+					
+					$event = new MaInApiEvents();
+					$event->setAccount($authUser);
+					$event->setAction("GET /cdr/".$user);
+					$eDate = new DateTime();
+					$event->setDate($eDate);
+					$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+					$event->setResult("Success - HTTP_OK");
+					$em = $this->getDoctrine()->getManager();
+					$em->persist($event);
+					$em->flush();
+					
 					return $cdr;
 				}
 				else 
 				{
-					return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE);
+					$event = new MaInApiEvents();
+					$event->setAccount($authUser);
+					$event->setAction("GET /cdr/".$user);
+					$eDate = new DateTime();
+					$event->setDate($eDate);
+					$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+					$event->setResult("No agents found - HTTP_NOT_FOUND");
+					$em = $this->getDoctrine()->getManager();
+					$em->persist($event);
+					$em->flush();
+					return new View("No agents found", Response::HTTP_NOT_FOUND);
 				}
 			}
 			else
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("GET /cdr/".$user);
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 		}
 		else
 		{
+			$event = new MaInApiEvents();
+			$event->setAccount($authUser);
+			$event->setAction("GET /cdr/".$user);
+			$eDate = new DateTime();
+			$event->setDate($eDate);
+			$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+			$event->setResult("Auth fail - HTTP_FORBIDDEN");
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($event);
+			$em->flush();
 			return new View("Auth fail", Response::HTTP_FORBIDDEN);
 		}
 	}
@@ -81,6 +134,16 @@ class CdrController extends FOSRestController
 			->findOneBy(array("accountName" => $auth->getUser($key)));
 			if(!$authUser)
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("POST /cdr/".$user);
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 			$factory = $this->get('security.encoder_factory');
@@ -104,6 +167,16 @@ class CdrController extends FOSRestController
 					$dir = $request->get('dir');
 					if(empty($src) || empty($billSec) || empty($status) || empty($date) || empty($dir))
 					{
+						$event = new MaInApiEvents();
+						$event->setAccount($authUser);
+						$event->setAction("POST /cdr/".$user);
+						$eDate = new DateTime();
+						$event->setDate($eDate);
+						$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ src : ".$src.", billSec : ".$billSec.", date : ".$request->get('date').", dir : ".$dir.", status : ".$status."}");
+						$event->setResult("NULL VALUES ARE NOT ALLOWED - HTTP_NOT_ACCEPTABLE");
+						$em = $this->getDoctrine()->getManager();
+						$em->persist($event);
+						$em->flush();
 						return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE);
 					}
 					$cdr = new MaCdr();
@@ -118,20 +191,62 @@ class CdrController extends FOSRestController
 					$em = $this->getDoctrine()->getManager();
 					$em->persist($cdr);
 					$em->flush();
+					
+					$event = new MaInApiEvents();
+					$event->setAccount($authUser);
+					$event->setAction("POST /cdr/".$user);
+					$eDate = new DateTime();
+					$event->setDate($eDate);
+					$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ src : ".$src.", billSec : ".$billSec.", date : ".$request->get('date').", dir : ".$dir.", status : ".$status."}");
+					$event->setResult("Success - HTTP_OK");
+					$em = $this->getDoctrine()->getManager();
+					$em->persist($event);
+					$em->flush();
+					
 					return $cdr;
 				}
 				else
 				{
-					return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE);
+					$event = new MaInApiEvents();
+					$event->setAccount($authUser);
+					$event->setAction("POST /cdr/".$user);
+					$eDate = new DateTime();
+					$event->setDate($eDate);
+					$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+					$event->setResult("No agents found - HTTP_NOT_FOUND");
+					$em = $this->getDoctrine()->getManager();
+					$em->persist($event);
+					$em->flush();
+					return new View("No agents found", Response::HTTP_NOT_FOUND);
 				}
 			}
 			else
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("POST /cdr/".$user);
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 		}
 		else
 		{
+			$event = new MaInApiEvents();
+			$event->setAccount($authUser);
+			$event->setAction("POST /cdr/".$user);
+			$eDate = new DateTime();
+			$event->setDate($eDate);
+			$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+			$event->setResult("Auth fail - HTTP_FORBIDDEN");
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($event);
+			$em->flush();
 			return new View("Auth fail", Response::HTTP_FORBIDDEN);
 		}
 	}
@@ -150,6 +265,16 @@ class CdrController extends FOSRestController
 			->findOneBy(array("accountName" => $auth->getUser($key)));
 			if(!$authUser)
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("PUT /cdr/".$user);
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 			$factory = $this->get('security.encoder_factory');
@@ -199,6 +324,17 @@ class CdrController extends FOSRestController
 						{
 							$cdr->setDir($dir);
 						}
+						$event = new MaInApiEvents();
+						$event->setAccount($authUser);
+						$event->setAction("PUT /cdr/".$user);
+						$eDate = new DateTime();
+						$event->setDate($eDate);
+						$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ src : ".$src.", billSec : ".$billSec.", date : ".$request->get('date').", dir : ".$dir.", status : ".$status."}");
+						$event->setResult("Success - HTTP_OK");
+						$em = $this->getDoctrine()->getManager();
+						$em->persist($event);
+						$em->flush();
+						
 						$em = $this->getDoctrine()->getManager();
 						$em->persist($cdr);
 						$em->flush();
@@ -206,21 +342,61 @@ class CdrController extends FOSRestController
 					}
 					else
 					{
-						return new View("NO VALID", Response::HTTP_NOT_ACCEPTABLE);
+						$event = new MaInApiEvents();
+						$event->setAccount($authUser);
+						$event->setAction("PUT /cdr/".$user);
+						$eDate = new DateTime();
+						$event->setDate($eDate);
+						$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ id : ".$id." }");
+						$event->setResult("No cdr found - HTTP_NOT_FOUND");
+						$em = $this->getDoctrine()->getManager();
+						$em->persist($event);
+						$em->flush();
+						return new View("No cdr found", Response::HTTP_NOT_FOUND);
 					}
 				}
 				else
 				{
-					return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE);
+					$event = new MaInApiEvents();
+					$event->setAccount($authUser);
+					$event->setAction("PUT /cdr/".$user);
+					$eDate = new DateTime();
+					$event->setDate($eDate);
+					$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+					$event->setResult("No agents found - HTTP_NOT_FOUND");
+					$em = $this->getDoctrine()->getManager();
+					$em->persist($event);
+					$em->flush();
+					return new View("No agents found", Response::HTTP_NOT_FOUND);
 				}
 			}
 			else
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("PUT /cdr/".$user);
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 		}
 		else
 		{
+			$event = new MaInApiEvents();
+			$event->setAccount($authUser);
+			$event->setAction("PUT /cdr/".$user);
+			$eDate = new DateTime();
+			$event->setDate($eDate);
+			$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+			$event->setResult("Auth fail - HTTP_FORBIDDEN");
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($event);
+			$em->flush();
 			return new View("Auth fail", Response::HTTP_FORBIDDEN);
 		}		
 		
@@ -240,6 +416,16 @@ class CdrController extends FOSRestController
 			->findOneBy(array("accountName" => $auth->getUser($key)));
 			if(!$authUser)
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("DELETE /cdr/".$user);
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 			$factory = $this->get('security.encoder_factory');
@@ -265,25 +451,77 @@ class CdrController extends FOSRestController
 						$em = $this->getDoctrine()->getManager();
 						$em->remove($cdr);
 						$em->flush();
+						
+						$event = new MaInApiEvents();
+						$event->setAccount($authUser);
+						$event->setAction("DELETE /cdr/".$user);
+						$eDate = new DateTime();
+						$event->setDate($eDate);
+						$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ id : ".$id."}");
+						$event->setResult("Sucess - HTTP_OK");
+						$em = $this->getDoctrine()->getManager();
+						$em->persist($event);
+						$em->flush();
+						
 						return new View("deleted successfuly", Response::HTTP_OK);
 					}
 					else
 					{
-						return new View("NO VALID", Response::HTTP_NOT_ACCEPTABLE);
+						$event = new MaInApiEvents();
+						$event->setAccount($authUser);
+						$event->setAction("DELETE /cdr/".$user);
+						$eDate = new DateTime();
+						$event->setDate($eDate);
+						$event->setPayload("{ user :".$auth->getUser($key).", password : ***},{ id : ".$id." }");
+						$event->setResult("No cdr found - HTTP_NOT_FOUND");
+						$em = $this->getDoctrine()->getManager();
+						$em->persist($event);
+						$em->flush();
+						return new View("No cdr found", Response::HTTP_NOT_FOUND);
 					}
 				}
 				else
 				{
-					return new View("NULL VALUES ARE NOT ALLOWED", Response::HTTP_NOT_ACCEPTABLE);
+					$event = new MaInApiEvents();
+					$event->setAccount($authUser);
+					$event->setAction("PUT /cdr/".$user);
+					$eDate = new DateTime();
+					$event->setDate($eDate);
+					$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+					$event->setResult("No agents found - HTTP_NOT_FOUND");
+					$em = $this->getDoctrine()->getManager();
+					$em->persist($event);
+					$em->flush();
+					return new View("No agents found", Response::HTTP_NOT_FOUND);
 				}
 			}
 			else
 			{
+				$event = new MaInApiEvents();
+				$event->setAccount($authUser);
+				$event->setAction("DELETE /cdr/".$user);
+				$eDate = new DateTime();
+				$event->setDate($eDate);
+				$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+				$event->setResult("Auth fail - HTTP_FORBIDDEN");
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($event);
+				$em->flush();
 				return new View("Auth fail", Response::HTTP_FORBIDDEN);
 			}
 		}
 		else
 		{
+			$event = new MaInApiEvents();
+			$event->setAccount($authUser);
+			$event->setAction("DELETE /cdr/".$user);
+			$eDate = new DateTime();
+			$event->setDate($eDate);
+			$event->setPayload("{ user :".$auth->getUser($key).", password : ***}");
+			$event->setResult("Auth fail - HTTP_FORBIDDEN");
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($event);
+			$em->flush();
 			return new View("Auth fail", Response::HTTP_FORBIDDEN);
 		}		
 	
